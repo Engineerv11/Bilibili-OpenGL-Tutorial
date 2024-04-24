@@ -8,6 +8,8 @@
 #include "wrapper/errorcheck.h"
 #include "application/Application.h"
 
+GLuint vao, program;
+
 void on_resize(int width, int height)
 {
 	GL_CALL(glViewport(0, 0, width, height));
@@ -80,7 +82,7 @@ void prepare_interleaved_buffer()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	GLuint vao;
+
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
@@ -149,8 +151,6 @@ void prepare_shader()
 		std::cout << "Error: Shader compile error - fragment\n" << info_log << std::endl;
 	}
 
-	GLuint program = 0;
-
 	program = glCreateProgram();
 
 	glAttachShader(program, vertex);
@@ -170,6 +170,17 @@ void prepare_shader()
 	glDeleteShader(fragment);
 }
 
+void render()
+{
+	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+
+	glUseProgram(program);
+
+	glBindVertexArray(vao);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+}
 
 int main()
 {
@@ -184,11 +195,12 @@ int main()
 	GL_CALL(glViewport(0, 0, 800, 600));
 	GL_CALL(glClearColor(0.2f, 0.3f, 1.0f, 1.0f));
 
+	prepare_interleaved_buffer();
 	prepare_shader();
 
 	while (app->update())
 	{
-		GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+		render();
 	}
 
 	app->release();
