@@ -200,6 +200,62 @@ void prepare_vao_for_gl_triangles()
 	glBindVertexArray(0);
 }
 
+void prepare_vao()
+{
+	float positions[] =
+	{
+		-0.5f,-0.5f, 0.0f,
+		 0.5f,-0.5f, 0.0f,
+		 0.0f, 0.5f, 0.0f,
+		 0.5f, 0.5f, 0.0f,
+	};
+
+	unsigned indices[] =
+	{
+		0, 1, 2,
+		2, 1, 3
+	};
+
+
+	GLuint vbo;
+
+	// 创建 vbo
+	glGenBuffers(1, &vbo);
+	// 绑定 vbo 到插槽 GL_ARRAY_BUFFER
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// 传输数据到插槽 GL_ARRAY_BUFFER
+	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+
+	GLuint ebo;
+
+	// 创建 ebo
+	glGenBuffers(1, &ebo);
+	// 绑定 ebo 到插槽 GL_ELEMENT_ARRAY_BUFFER
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	// 传输数据到插槽 GL_ELEMENT_ARRAY_BUFFER
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// 创建 vao
+	glGenVertexArrays(1, &vao);
+	// 绑定 vao 到全局环境
+	glBindVertexArray(vao);
+
+
+	// 绑定 vbo 到插槽 GL_ARRAY_BUFFER
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// 启用 0 号位
+	glEnableVertexAttribArray(0);
+	// 向 0 号位添加描述信息
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3,(void*)0);
+
+	// 将 ebo 加入 vao ，此前已将 vao 绑定到全局环境
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+	// 解除 vao 在全局环境的绑定
+	glBindVertexArray(0);
+}
+
 void render()
 {
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
@@ -207,9 +263,11 @@ void render()
 	glUseProgram(program);
 
 	glBindVertexArray(vao);
+	 
+	// 发出绘制指令，绘制的索引数量为 6，数字 0 代表使用当前和 vao 关联的 veo
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
+	glBindVertexArray(0);
 }
 
 int main()
@@ -225,7 +283,7 @@ int main()
 	GL_CALL(glViewport(0, 0, 800, 600));
 	GL_CALL(glClearColor(0.2f, 0.3f, 1.0f, 1.0f));
 
-	prepare_vao_for_gl_triangles();
+	prepare_vao();
 	prepare_shader();
 
 	while (app->update())
