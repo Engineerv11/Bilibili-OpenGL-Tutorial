@@ -2,13 +2,14 @@
 #include <string>
 #include <cassert>
 
-#include <glad/glad.h>  // 此include语句应放在#include <GLFW/glfw3.h>上方
-#include <GLFW/glfw3.h>
+#include "glframework/core.h"
+#include "glframework/shader.h"
 
 #include "wrapper/errorcheck.h"
 #include "application/Application.h"
 
-GLuint vao, program;
+GLuint vao;
+Shader* shader = nullptr;
 
 void on_resize(int width, int height)
 {
@@ -102,76 +103,7 @@ void prepare_interleaved_buffer()
 
 void prepare_shader()
 {
-	const char* vertex_shader_source =
-		"#version 460 core\n"
-		"layout(location = 0) in vec3 pos;\n"
-		"layout(location = 1) in vec3 in_color;\n"
-		"out vec3 vs_color;\n"
-		"void main()\n"
-		"{\n"
-		"gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);\n"
-		"vs_color = in_color;\n"
-		"}\0";
-
-	const char* fragment_shader_source =
-		"#version 330 core\n"
-		"out vec4 ps_color;\n"
-		"in vec3 vs_color;\n"
-		"void main()\n"
-		"{\n"
-		"ps_color = vec4(vs_color, 1.0f);\n"
-		"}\n\0";
-
-	GLuint vertex, fragment;
-
-	vertex = glCreateShader(GL_VERTEX_SHADER);
-
-	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-
-	glShaderSource(vertex, 1, &vertex_shader_source, NULL);
-
-	glShaderSource(fragment, 1, &fragment_shader_source, NULL);
-
-	int success = 0;
-	char info_log[1024];
-
-	glCompileShader(vertex);
-
-	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-	
-	if (!success)
-	{
-		glGetShaderInfoLog(vertex, 1024, NULL, info_log);
-		std::cout << "Error: Shader compile error - vertex\n" << info_log << std::endl;
-	}
-
-	glCompileShader(fragment);
-
-	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-	{
-		glGetShaderInfoLog(vertex, 1024, NULL, info_log);
-		std::cout << "Error: Shader compile error - fragment\n" << info_log << std::endl;
-	}
-
-	program = glCreateProgram();
-
-	glAttachShader(program, vertex);
-	glAttachShader(program, fragment);
-
-	glLinkProgram(program);
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		glGetProgramInfoLog(program, 1024, NULL, info_log);
-		std::cout << "Error: Shader link error - program\n" << info_log << std::endl;
-	}
-
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+	shader = new Shader("assets/shaders/vertex.glsl", "assets/shaders/pixel.glsl");
 }
 
 void prepare_vao_for_gl_triangles()
@@ -287,7 +219,7 @@ void render()
 {
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 
-	glUseProgram(program);
+	shader->enable();
 
 	glBindVertexArray(vao);
 	 
@@ -295,6 +227,8 @@ void render()
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
+
+	shader->disable();
 }
 
 int main()
