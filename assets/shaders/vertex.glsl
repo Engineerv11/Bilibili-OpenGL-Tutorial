@@ -1,9 +1,14 @@
 #version 460 core
+
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 in_color;
+
+uniform float time;
+
 out vec3 vs_color;
+
 void main()
 {
 	gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
-	vs_color = in_color;
+	vs_color = in_color * (sin(time) + 1.0) / 2.0;
 }

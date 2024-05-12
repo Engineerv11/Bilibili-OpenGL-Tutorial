@@ -1,5 +1,6 @@
 #include "shader.h"
 #include "shader.h"
+#include "shader.h"
 #include "../wrapper/errorcheck.h"
 #include <string>
 #include <fstream>
@@ -88,6 +89,15 @@ void Shader::enable()
 void Shader::disable()
 {
 	GL_CALL(glUseProgram(0));
+}
+
+void Shader::set_uniform(const std::string& name, float value)
+{
+	// 通过名称获得 uniform 变量的 Location
+	GLuint location = GL_CALL(glGetUniformLocation(m_program, name.c_str()));
+
+	// 通过 Location 更新 uniform 变量的值
+	glUniform1f(location, value);
 }
 
 void Shader::check_shader_error(GLuint target, std::string type)

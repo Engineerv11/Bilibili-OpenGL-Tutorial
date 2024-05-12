@@ -15,6 +15,8 @@ public:
 	// 禁用当前Shader
 	void disable();
 
+	void set_uniform(const std::string& name,float value);
+
 private:
 	void check_shader_error(GLuint target,std::string type);
 
