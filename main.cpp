@@ -85,7 +85,7 @@ void prepare_vao()
 	// 启用 0 号位
 	glEnableVertexAttribArray(0);
 	// 向 0 号位添加描述信息
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3,(void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 
 
 	// 绑定 vbo 到插槽 GL_ARRAY_BUFFER
@@ -110,11 +110,15 @@ void render()
 
 	shader->enable();
 
-	shader->set_uniform("time", glfwGetTime());
-	shader->set_uniform("speed", 2.0f);
+	float color[] = { 0.0f, 0.0f, 0.5f };
+
+	shader->set_uniform_v3("u_color", color);
+
+	// shader->set_uniform_v3("u_color", 1.0f, 0.0f, 0.5f);
+
 
 	glBindVertexArray(vao);
-	 
+
 	// 发出绘制指令，绘制的索引数量为 6，数字 0 代表使用当前和 vao 关联的 veo
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 

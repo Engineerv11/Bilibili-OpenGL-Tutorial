@@ -97,7 +97,26 @@ void Shader::set_uniform(const std::string& name, float value)
 	GLuint location = GL_CALL(glGetUniformLocation(m_program, name.c_str()));
 
 	// 通过 Location 更新 uniform 变量的值
-	glUniform1f(location, value);
+	GL_CALL(glUniform1f(location, value));
+}
+
+void Shader::set_uniform_v3(const std::string& name, float x, float y, float z)
+{
+	// 通过名称获得 uniform 变量的 Location
+	GLuint location = GL_CALL(glGetUniformLocation(m_program, name.c_str()));
+
+	// 通过 Location 更新 uniform 变量的值
+	GL_CALL(glUniform3f(location, x, y, z));
+}
+
+void Shader::set_uniform_v3(const std::string& name, const float* values)
+{
+	// 通过名称获得 uniform 变量的 Location
+	GLuint location = GL_CALL(glGetUniformLocation(m_program, name.c_str()));
+
+	// 通过 Location 更新 uniform 变量的值
+	// 第2个参数代表传递的 values 指针指向的位置存在多少个三维向量 - vector 3
+	GL_CALL(glUniform3fv(location, 1, values));
 }
 
 void Shader::check_shader_error(GLuint target, std::string type)

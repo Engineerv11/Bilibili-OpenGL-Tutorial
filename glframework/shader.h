@@ -17,6 +17,10 @@ public:
 
 	void set_uniform(const std::string& name,float value);
 
+	void set_uniform_v3(const std::string& name, float x, float y, float z);
+	
+	void set_uniform_v3(const std::string& name, const float* values);
+
 private:
 	void check_shader_error(GLuint target,std::string type);
 
