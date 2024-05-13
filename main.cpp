@@ -111,6 +111,7 @@ void render()
 	shader->enable();
 
 	shader->set_uniform("time", glfwGetTime());
+	shader->set_uniform("speed", 2.0f);
 
 	glBindVertexArray(vao);
 	 
